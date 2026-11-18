@@ -41,6 +41,14 @@ beforeEach(() => {
   ];
 });
 
+test('GET /health returns 200 with {status: "ok"} as JSON', async () => {
+  const res = await fetch(`${base}/health`);
+  assert.strictEqual(res.status, 200);
+  assert.match(res.headers.get('content-type'), /application\/json/);
+  assert.deepStrictEqual(await res.json(), { status: 'ok' });
+  assert.strictEqual(calls.length, 0);
+});
+
 test('DELETE /tasks/:id deletes an existing task and returns 204', async () => {
   const res = await fetch(`${base}/tasks/1`, { method: 'DELETE' });
   assert.strictEqual(res.status, 204);
