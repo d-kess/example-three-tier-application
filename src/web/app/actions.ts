@@ -35,3 +35,12 @@ export async function toggleTask(id: number, completed: boolean) {
   });
   revalidatePath('/');
 }
+
+export async function deleteTask(id: number) {
+  const res = await fetch(`${API_URL}/tasks/${id}`, { method: 'DELETE' });
+  // 404 means the task is already gone, which is the desired end state.
+  if (!res.ok && res.status !== 404) {
+    throw new Error('Failed to delete task');
+  }
+  revalidatePath('/');
+}

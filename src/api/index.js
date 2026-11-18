@@ -48,6 +48,27 @@ app.patch('/tasks/:id', async (req, res) => {
   res.json(updated[0]);
 });
 
-app.listen(PORT, () => {
-  console.log(`API listening on port ${PORT}`);
+// DELETE /tasks/:id — delete a task
+app.delete('/tasks/:id', async (req, res) => {
+  // Task ids are Postgres `serial` (int4) values
+  if (!/^\d+$/.test(req.params.id)) {
+    return res.status(400).json({ error: 'invalid id' });
+  }
+  const id = parseInt(req.params.id, 10);
+  if (id < 1 || id > 2147483647) {
+    return res.status(400).json({ error: 'invalid id' });
+  }
+
+  const { rowCount } = await db.query('DELETE FROM tasks WHERE id = $1', [id]);
+  if (rowCount === 0) return res.status(404).json({ error: 'Not found' });
+
+  res.status(204).end();
 });
+
+if (require.main === module) {
+  app.listen(PORT, () => {
+    console.log(`API listening on port ${PORT}`);
+  });
+}
+
+module.exports = app;
