@@ -137,7 +137,10 @@ describe('POST /tasks', () => {
   test('rejects a missing or non-object body with 400', async () => {
     assertValidationError(await request('POST', '/tasks'));
     assertValidationError(await request('POST', '/tasks', []));
-    assertValidationError(await request('POST', '/tasks', 'null'));
+    // Express's strict JSON parser rejects a bare `null` before validation runs.
+    const res = await request('POST', '/tasks', 'null');
+    assert.strictEqual(res.status, 400);
+    assert.deepStrictEqual(res.json, { error: 'Malformed JSON body' });
     assert.deepStrictEqual(calls, []);
   });
 
