@@ -29,16 +29,34 @@ app.post('/tasks', async (req, res) => {
   res.status(201).json(rows[0]);
 });
 
-// PATCH /tasks/:id — update a task (complete/uncomplete or rename)
+// PATCH /tasks/:id — update a task.
+// - body { completed } sets the completed status explicitly
+// - body { title } renames the task
+// - an empty body toggles the completed status
 app.patch('/tasks/:id', async (req, res) => {
+  // Task ids are Postgres `serial` (int4) values
+  if (!/^\d+$/.test(req.params.id)) {
+    return res.status(400).json({ error: 'invalid id' });
+  }
   const id = parseInt(req.params.id, 10);
-  const { completed, title } = req.body;
+  if (id < 1 || id > 2147483647) {
+    return res.status(400).json({ error: 'invalid id' });
+  }
+  const { completed, title } = req.body || {};
+  if (title !== undefined && (typeof title !== 'string' || !title.trim())) {
+    return res.status(400).json({ error: 'title must be a non-empty string' });
+  }
 
   const { rows } = await db.query('SELECT * FROM tasks WHERE id = $1', [id]);
   if (rows.length === 0) return res.status(404).json({ error: 'Not found' });
 
   const current = rows[0];
-  const newCompleted = completed !== undefined ? Boolean(completed) : current.completed;
+  let newCompleted = current.completed;
+  if (completed !== undefined) {
+    newCompleted = Boolean(completed);
+  } else if (title === undefined) {
+    newCompleted = !current.completed;
+  }
   const newTitle = title !== undefined ? title.trim() : current.title;
 
   const { rows: updated } = await db.query(

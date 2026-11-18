@@ -13,6 +13,15 @@ const fakeDb = {
       tasks = tasks.filter((t) => t.id !== params[0]);
       return { rows: [], rowCount: before - tasks.length };
     }
+    if (sql.startsWith('SELECT * FROM tasks WHERE id')) {
+      return { rows: tasks.filter((t) => t.id === params[0]) };
+    }
+    if (sql.startsWith('UPDATE tasks SET')) {
+      const task = tasks.find((t) => t.id === params[2]);
+      task.completed = params[0];
+      task.title = params[1];
+      return { rows: [task], rowCount: 1 };
+    }
     throw new Error(`unexpected query: ${sql}`);
   },
 };
@@ -71,4 +80,53 @@ test('DELETE /tasks/:id returns 400 for an invalid id', async () => {
   }
   assert.strictEqual(calls.length, 0);
   assert.strictEqual(tasks.length, 2);
+});
+
+function patch(id, body) {
+  return fetch(`${base}/tasks/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+}
+
+test('PATCH /tasks/:id toggles completed when the body is empty', async () => {
+  let res = await patch(1, {});
+  assert.strictEqual(res.status, 200);
+  assert.deepStrictEqual(await res.json(), { id: 1, title: 'one', completed: true });
+
+  res = await patch(1, {});
+  assert.strictEqual(res.status, 200);
+  assert.deepStrictEqual(await res.json(), { id: 1, title: 'one', completed: false });
+
+  res = await patch(2, {});
+  assert.strictEqual((await res.json()).completed, false);
+});
+
+test('PATCH /tasks/:id sets completed explicitly', async () => {
+  const res = await patch(2, { completed: true });
+  assert.strictEqual(res.status, 200);
+  assert.strictEqual((await res.json()).completed, true);
+});
+
+test('PATCH /tasks/:id renames without changing completed', async () => {
+  const res = await patch(2, { title: '  renamed ' });
+  assert.deepStrictEqual(await res.json(), { id: 2, title: 'renamed', completed: true });
+});
+
+test('PATCH /tasks/:id returns 404 when the task does not exist', async () => {
+  const res = await patch(999, {});
+  assert.strictEqual(res.status, 404);
+  assert.deepStrictEqual(await res.json(), { error: 'Not found' });
+  assert.ok(!calls.some((c) => c.sql.startsWith('UPDATE')));
+});
+
+test('PATCH /tasks/:id returns 400 for an invalid id or title', async () => {
+  for (const bad of ['abc', '1.5', '-1', '0', '99999999999']) {
+    const res = await patch(bad, {});
+    assert.strictEqual(res.status, 400, `id ${bad}`);
+  }
+  const res = await patch(1, { title: '   ' });
+  assert.strictEqual(res.status, 400);
+  assert.strictEqual(calls.length, 0);
 });
