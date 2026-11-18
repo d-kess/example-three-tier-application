@@ -63,16 +63,58 @@ The API is not exposed directly, but you can reach it through the web container 
 |--------|------|-------------|
 | GET | `/health` | Health check |
 | GET | `/tasks` | List all tasks |
-| POST | `/tasks` | Create a task (`{ "title": "..." }`) |
-| PATCH | `/tasks/:id` | Update a task (`{ "completed": true }` or `{ "title": "..." }`) |
+| POST | `/tasks` | Create a task (`{ "title": "...", "completed"?: false }`) → `201` |
+| PUT | `/tasks/:id` | Replace a task; both `title` and `completed` are required |
+| PATCH | `/tasks/:id` | Partially update a task (`{ "completed": true }` and/or `{ "title": "..." }`). An empty or missing body toggles `completed`. |
+| DELETE | `/tasks/:id` | Delete a task → `204` |
+
+#### Validation
+
+Every endpoint validates its input before it touches the database (`src/api/validation.js`):
+
+| Input | Rule |
+|-------|------|
+| `:id` | Integer from 1 to 2147483647 |
+| `title` | Non-blank string, at most 500 characters after trimming |
+| `completed` | Strict boolean; strings and numbers are rejected |
+| Request body | Must be a JSON object when present |
+
+#### Errors
+
+Every error uses the same body:
+
+```json
+{
+  "error": {
+    "code": "validation_error",
+    "message": "Request validation failed",
+    "details": [{ "field": "title", "message": "title is required" }]
+  }
+}
+```
+
+| Status | `code` | When |
+|--------|--------|------|
+| 400 | `validation_error` | Input fails the rules above (`details` lists each field) |
+| 400 | `bad_request` | Malformed JSON body |
+| 404 | `not_found` | Unknown task id or unknown route |
+| 413 | `payload_too_large` | Request body too large |
+| 500 | `internal_error` | Unexpected failure |
+
+The web app reads this format in `src/web/app/actions.ts`, so change both together.
 
 ## Project structure
 
 ```
 src/
 ├── api/            # Express REST API
-│   ├── index.js    # Route handlers
+│   ├── index.js    # Server entry point
+│   ├── app.js      # Express app: middleware, routes, error handling
+│   ├── routes/     # Route handlers (tasks.js)
+│   ├── validation.js # Input validation middleware
+│   ├── errors.js   # ApiError and the JSON error handler
 │   ├── db.js       # PostgreSQL connection pool
+│   ├── tests/      # Jest + supertest tests (npm test)
 │   └── Dockerfile
 ├── db/             # Database migrations
 │   ├── migrations/ # node-pg-migrate migration files
