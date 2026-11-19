@@ -4,6 +4,8 @@ A reference implementation of a three-tier web application: a Next.js frontend, 
 
 This repository is a reference example for a three-tier application.
 
+Run `bash tests/smoke.sh` from the repository root to run the smoke check.
+
 ## Architecture
 
 ```
