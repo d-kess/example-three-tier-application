@@ -180,3 +180,5 @@ When running via Docker Compose the `migrate` service handles this automatically
 Mid-run acknowledged: HX11-LIVE.
 
 Same PR continuation verified: HX11-FOLLOWUP.
+
+Review comment applied: HX16-REVIEW.
