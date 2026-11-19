@@ -177,4 +177,4 @@ When running via Docker Compose the `migrate` service handles this automatically
 
 ## Forge live messaging QA
 
-Initial live check.
+Mid-run acknowledged: HX11-LIVE.
