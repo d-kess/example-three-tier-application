@@ -175,6 +175,12 @@ DATABASE_URL=postgres://app:app@localhost:5432/app npx node-pg-migrate down
 
 When running via Docker Compose the `migrate` service handles this automatically on startup.
 
-## Forge messaging QA
+## Forge live messaging QA
 
-Initial messaging check.
+Mid-run acknowledged: HX11-LIVE.
+
+Same PR continuation verified: HX11-FOLLOWUP.
+
+Review comment applied: HX16-REVIEW.
+
+Inspector regression checked: HX10-141.
