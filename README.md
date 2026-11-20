@@ -6,6 +6,8 @@ This repository is a reference example for a three-tier application.
 
 Run `bash tests/smoke.sh` from the repository root to run the smoke check.
 
+**Troubleshooting:** run it before submitting a PR. If it prints a `smoke:` failure message, fix the problem it names in `README.md` and re-run until it prints `smoke: ok`.
+
 ## Architecture
 
 ```
