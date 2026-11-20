@@ -13,6 +13,9 @@ describe('POST /tasks with an empty title', () => {
   it.each([
     ['empty string', ''],
     ['whitespace-only string', '   '],
+    ['tabs-only string', '\t\t'],
+    ['newlines-only string', '\n\n'],
+    ['mixed spaces, tabs and newlines string', ' \t\n '],
   ])('rejects an %s with a 400 validation_error and inserts nothing', async (_name, title) => {
     const res = await request(app).post('/tasks').send({ title });
 
