@@ -75,10 +75,24 @@ describe('PATCH /tasks/:id', () => {
     expect(res.body).toMatchObject({ id: 2, title: 'renamed', completed: true });
   });
 
+  it('updates title and completed together', async () => {
+    const res = await patch(1, { title: '  both  ', completed: true });
+    expect(res.status).toBe(200);
+    expect(res.body).toMatchObject({ id: 1, title: 'both', completed: true });
+    expect(mockFake.state.tasks[0]).toMatchObject({ title: 'both', completed: true });
+  });
+
   it('returns 404 for an unknown id', async () => {
     const res = await patch(999);
     expect(res.status).toBe(404);
     expect(res.body.error.code).toBe('not_found');
+  });
+
+  it('returns 404 for an unknown id with a title/completed body', async () => {
+    const res = await patch(999, { title: 'x', completed: true });
+    expect(res.status).toBe(404);
+    expect(res.body.error).toEqual({ code: 'not_found', message: 'Task 999 not found' });
+    expect(mockFake.state.calls.some((c) => c.sql.startsWith('UPDATE'))).toBe(false);
   });
 
   it.each(['abc', '0', '99999999999'])('returns 400 for invalid id %s', async (id) => {
@@ -91,6 +105,17 @@ describe('PATCH /tasks/:id', () => {
     expect((await patch(1, { title: '   ' })).status).toBe(400);
     expect((await patch(1, { title: 3 })).status).toBe(400);
     expect((await patch(1, { completed: 'true' })).status).toBe(400);
+    expect(mockFake.state.calls).toHaveLength(0);
+  });
+
+  it('reports validation_error details for bad title and completed', async () => {
+    const res = await patch(1, { title: '   ', completed: 'yes' });
+    expect(res.status).toBe(400);
+    expect(res.body.error.code).toBe('validation_error');
+    expect(res.body.error.details).toEqual([
+      { field: 'title', message: 'title must not be empty' },
+      { field: 'completed', message: 'completed must be a boolean' },
+    ]);
     expect(mockFake.state.calls).toHaveLength(0);
   });
 });
