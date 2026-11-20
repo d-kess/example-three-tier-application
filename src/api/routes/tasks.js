@@ -54,4 +54,11 @@ router.patch('/:id', validateId, validatePatch, async (req, res) => {
   res.json(updated[0]);
 });
 
+// DELETE /tasks/:id — delete a task
+router.delete('/:id', validateId, async (req, res) => {
+  const { rows } = await db.query('DELETE FROM tasks WHERE id = $1 RETURNING *', [req.taskId]);
+  if (rows.length === 0) throw missing(req.taskId);
+  res.status(204).end();
+});
+
 module.exports = router;

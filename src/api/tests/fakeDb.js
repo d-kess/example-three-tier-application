@@ -34,9 +34,9 @@ function createFakeDb() {
       return { rows: [task], rowCount: 1 };
     }
     if (sql.startsWith('DELETE FROM tasks')) {
-      const before = state.tasks.length;
+      const deleted = state.tasks.filter((t) => t.id === params[0]);
       state.tasks = state.tasks.filter((t) => t.id !== params[0]);
-      return { rows: [], rowCount: before - state.tasks.length };
+      return { rows: deleted, rowCount: deleted.length };
     }
     throw new Error(`unexpected query: ${sql}`);
   };
