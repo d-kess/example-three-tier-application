@@ -1,4 +1,5 @@
 import { getTasks, createTask, toggleTask } from './actions';
+import { DeleteTaskButton } from './components/DeleteTaskButton';
 
 export default async function Home() {
   const tasks = await getTasks();
@@ -41,7 +42,7 @@ export default async function Home() {
           {tasks.map((task) => (
             <li
               key={task.id}
-              className="flex items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3"
+              className="flex flex-wrap items-center gap-3 rounded-lg border border-zinc-200 dark:border-zinc-700 bg-white dark:bg-zinc-800 px-4 py-3"
             >
               <form
                 action={async () => {
@@ -74,6 +75,7 @@ export default async function Home() {
               >
                 {task.title}
               </span>
+              <DeleteTaskButton id={task.id} title={task.title} />
             </li>
           ))}
         </ul>

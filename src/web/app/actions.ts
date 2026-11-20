@@ -84,6 +84,11 @@ export async function updateTask(id: number, title: string): Promise<ActionResul
   return finish(res);
 }
 
+export async function deleteTask(id: number): Promise<ActionResult> {
+  const res = await send(`/tasks/${id}`, { method: 'DELETE' });
+  return finish(res);
+}
+
 export async function toggleTask(id: number, completed: boolean): Promise<ActionResult> {
   const res = await send(`/tasks/${id}`, {
     method: 'PATCH',
