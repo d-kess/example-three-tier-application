@@ -72,6 +72,7 @@ The API is not exposed directly, but you can reach it through the web container 
 | POST | `/tasks` | Create a task (`{ "title": "...", "completed"?: false }`) → `201` |
 | PUT | `/tasks/:id` | Replace a task; both `title` and `completed` are required |
 | PATCH | `/tasks/:id` | Partially update a task (`{ "completed": true }` and/or `{ "title": "..." }`). An empty or missing body toggles `completed`. |
+| DELETE | `/tasks/:id` | Delete a task → `204` with no body; `404` if it does not exist |
 
 #### Validation
 

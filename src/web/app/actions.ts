@@ -72,16 +72,28 @@ export async function createTask(formData: FormData): Promise<ActionResult> {
   return finish(res);
 }
 
-export async function updateTask(id: number, title: string): Promise<ActionResult> {
+export async function updateTask(
+  id: number,
+  title: string,
+  completed?: boolean
+): Promise<ActionResult> {
   const invalid = validateTitle(title);
   if (invalid) return { ok: false, fieldErrors: { title: invalid } };
-  // PATCH changes only the title and leaves `completed` untouched.
+  // PATCH only changes the fields sent; `completed` is left untouched when omitted.
+  const body: { title: string; completed?: boolean } = { title: title.trim() };
+  if (completed !== undefined) body.completed = completed;
   const res = await send(`/tasks/${id}`, {
     method: 'PATCH',
     headers: JSON_HEADERS,
-    body: JSON.stringify({ title: title.trim() }),
+    body: JSON.stringify(body),
   });
   return finish(res);
+}
+
+export async function deleteTask(id: number): Promise<ActionResult> {
+  const res = await send(`/tasks/${id}`, { method: 'DELETE' });
+  // A 404 means the task is already gone; refresh the list instead of failing.
+  return finish(res, true);
 }
 
 export async function toggleTask(id: number, completed: boolean): Promise<ActionResult> {
