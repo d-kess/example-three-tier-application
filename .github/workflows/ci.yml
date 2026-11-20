@@ -1,7 +1,7 @@
 name: ci
 on:
   pull_request:
-    branches: [main]
+    branches: [main, t72-base]
   push:
     branches: [main]
 jobs:
