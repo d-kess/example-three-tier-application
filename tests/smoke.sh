@@ -4,5 +4,3 @@ set -e
 test -f README.md
 if grep -q "BREAK_CI" README.md; then echo "smoke: README contains BREAK_CI"; exit 1; fi
 echo "smoke: ok"
-echo "HX16 deliberate smoke failure" >&2
-exit 1
