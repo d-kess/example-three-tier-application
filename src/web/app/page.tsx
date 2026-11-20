@@ -11,7 +11,13 @@ export default async function Home() {
         </h1>
 
         {/* Add task form */}
-        <form action={createTask} className="flex gap-2 mb-8">
+        <form
+          action={async (formData: FormData) => {
+            'use server';
+            await createTask(formData);
+          }}
+          className="flex gap-2 mb-8"
+        >
           <input
             name="title"
             type="text"
