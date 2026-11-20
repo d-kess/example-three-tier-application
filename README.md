@@ -8,6 +8,14 @@ Run `bash tests/smoke.sh` from the repository root to run the smoke check.
 
 **Troubleshooting:** run it before submitting a PR. If it prints a `smoke:` failure message, fix the problem it names in `README.md` and re-run until it prints `smoke: ok`.
 
+## Smoke test
+
+```bash
+bash tests/smoke.sh
+```
+
+The script checks that `README.md` exists and does not contain the CI-failure marker. It prints `smoke: ok` and exits 0 when the check passes.
+
 ## Architecture
 
 ```
