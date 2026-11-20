@@ -10,7 +10,7 @@ export default function Error({
   return (
     <div className="min-h-screen bg-zinc-50 dark:bg-zinc-900 py-16 px-4">
       <div className="max-w-lg mx-auto text-center">
-        <p role="alert" className="text-red-600 mb-4">
+        <p role="alert" className="text-red-600 dark:text-red-400 mb-4">
           Something went wrong: {error.message}
         </p>
         <button

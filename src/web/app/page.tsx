@@ -82,7 +82,7 @@ export default async function Home() {
               >
                 <button
                   type="submit"
-                  className="text-zinc-400 hover:text-red-600 transition-colors text-sm"
+                  className="text-zinc-400 hover:text-red-600 dark:hover:text-red-400 transition-colors text-sm"
                   aria-label={`Delete task: ${task.title}`}
                 >
                   Delete
