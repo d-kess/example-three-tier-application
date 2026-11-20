@@ -84,6 +84,12 @@ export async function updateTask(id: number, title: string): Promise<ActionResul
   return finish(res);
 }
 
+export async function deleteTask(id: number): Promise<ActionResult> {
+  const res = await send(`/tasks/${id}`, { method: 'DELETE' });
+  // A 404 means the task is already gone, so refresh the list instead of erroring.
+  return finish(res, true);
+}
+
 export async function toggleTask(id: number, completed: boolean): Promise<ActionResult> {
   const res = await send(`/tasks/${id}`, {
     method: 'PATCH',
