@@ -84,6 +84,14 @@ export async function updateTask(id: number, title: string): Promise<ActionResul
   return finish(res);
 }
 
+export async function deleteTask(formData: FormData): Promise<ActionResult> {
+  const id = Number(formData.get('id'));
+  if (!Number.isInteger(id) || id < 1) return { ok: false, error: 'Invalid task id' };
+  // A 404 means the task is already gone, so treat it as success.
+  const res = await send(`/tasks/${id}`, { method: 'DELETE' });
+  return finish(res, true);
+}
+
 export async function toggleTask(id: number, completed: boolean): Promise<ActionResult> {
   const res = await send(`/tasks/${id}`, {
     method: 'PATCH',
