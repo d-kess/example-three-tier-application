@@ -92,9 +92,3 @@ export async function toggleTask(id: number, completed: boolean): Promise<Action
   });
   return finish(res);
 }
-
-export async function deleteTask(id: number): Promise<ActionResult> {
-  const res = await send(`/tasks/${id}`, { method: 'DELETE' });
-  // 404 means the task is already gone, which is the desired end state.
-  return finish(res, true);
-}
