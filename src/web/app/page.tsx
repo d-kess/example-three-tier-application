@@ -1,4 +1,5 @@
 import { getTasks, createTask, toggleTask } from './actions';
+import { DeleteButton } from './components/DeleteButton';
 
 export default async function Home() {
   const tasks = await getTasks();
@@ -74,6 +75,7 @@ export default async function Home() {
               >
                 {task.title}
               </span>
+              <DeleteButton id={task.id} title={task.title} />
             </li>
           ))}
         </ul>

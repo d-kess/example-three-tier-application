@@ -84,6 +84,12 @@ export async function updateTask(id: number, title: string): Promise<ActionResul
   return finish(res);
 }
 
+export async function deleteTask(id: number): Promise<ActionResult> {
+  // A 404 is reported as an error so the UI never hides a failed delete.
+  const res = await send(`/tasks/${id}`, { method: 'DELETE' });
+  return finish(res);
+}
+
 export async function toggleTask(id: number, completed: boolean): Promise<ActionResult> {
   const res = await send(`/tasks/${id}`, {
     method: 'PATCH',
